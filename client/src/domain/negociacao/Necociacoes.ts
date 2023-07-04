@@ -10,6 +10,12 @@ export default class Negociacoes {
     this._negociacoes.push(negociacao);
   }
 
+  get volumeTotal() {
+    return this._negociacoes.reduce((total, negociacao) => {
+      return total + negociacao.getVolume;
+    }, 0);
+  }
+
   paraArray() {
     let copy: Array<Negociacao> = [];
     return copy.concat(this._negociacoes);
