@@ -1,14 +1,6 @@
 import DateConverter from "../converters/DataConverter.js";
-export default class NegociacaoView {
-    elemento;
-    constructor(seletor) {
-        this.elemento = document.querySelector(seletor);
-    }
-    update(model) {
-        if (!this.elemento)
-            return;
-        this.elemento.innerHTML = this.template(model);
-    }
+import View from "./View.js";
+export default class NegociacaoView extends View {
     template(model) {
         return `
     <table class="table table-hover table-bordered">

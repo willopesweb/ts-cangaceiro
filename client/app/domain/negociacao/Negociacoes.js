@@ -26,4 +26,4 @@ export default class Negociacoes {
         this._trigger(this);
     }
 }
-//# sourceMappingURL=Necociacoes.js.map
+//# sourceMappingURL=Negociacoes.js.map

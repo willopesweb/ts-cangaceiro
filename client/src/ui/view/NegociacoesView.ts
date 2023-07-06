@@ -1,17 +1,8 @@
-import Negociacoes from "../../domain/negociacao/Necociacoes.js";
+import Negociacoes from "../../domain/negociacao/Negociacoes.js";
 import DateConverter from "../converters/DataConverter.js";
+import View from "./View.js";
 
-export default class NegociacaoView {
-  private elemento: HTMLElement | null;
-  constructor(seletor: string) {
-    this.elemento = document.querySelector(seletor);
-  }
-
-  update(model: Negociacoes) {
-    if (!this.elemento) return;
-    this.elemento.innerHTML = this.template(model);
-  }
-
+export default class NegociacaoView extends View {
   template(model: Negociacoes) {
     return `
     <table class="table table-hover table-bordered">
