@@ -1,16 +1,13 @@
 export default class Negociacoes {
     _negociacoes;
-    _trigger;
-    constructor(trigger) {
+    constructor() {
         this._negociacoes = [];
-        this._trigger = trigger;
         Object.freeze(this);
     }
     adiciona(negociacao) {
         if (!negociacao)
             return;
         this._negociacoes.push(negociacao);
-        this._trigger(this);
     }
     get volumeTotal() {
         return this._negociacoes.reduce((total, negociacao) => {
@@ -23,7 +20,6 @@ export default class Negociacoes {
     }
     esvazia() {
         this._negociacoes.length = 0;
-        this._trigger(this);
     }
 }
 //# sourceMappingURL=Negociacoes.js.map

@@ -2,16 +2,16 @@ import Negociacao from "./Negociacao";
 
 export default class Negociacoes {
   private _negociacoes: Array<Negociacao>;
-  private _trigger: Function;
-  constructor(trigger: Function) {
+  //private _trigger: Function;
+  constructor() {
     this._negociacoes = [];
-    this._trigger = trigger;
+    //this._trigger = trigger;
     Object.freeze(this);
   }
   adiciona(negociacao: Negociacao | null) {
     if (!negociacao) return;
     this._negociacoes.push(negociacao);
-    this._trigger(this);
+    //this._trigger(this);
   }
 
   get volumeTotal() {
@@ -27,6 +27,6 @@ export default class Negociacoes {
 
   esvazia() {
     this._negociacoes.length = 0;
-    this._trigger(this);
+    //this._trigger(this);
   }
 }
