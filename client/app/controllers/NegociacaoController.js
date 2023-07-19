@@ -49,16 +49,18 @@ export default class NegociacaoController {
         return new Negociacao(DataConverter.paraData(this.inputData.value), parseInt(this.inputQuantidade.value), parseFloat(this.inputValor.value));
     }
     importarNegociacoes() {
-        this.service.obterNegociacoesDaSemana((err, negociacoes) => {
-            if (err) {
-                this.mensagem.texto = err;
-                return;
-            }
-            if (!negociacoes)
-                return;
-            negociacoes.forEach((negociacao) => this.negociacoes.adiciona(negociacao));
-            this.mensagem.texto = "Negociações	importadas	com	sucesso";
-        });
+        const negociacoes = [];
+        this.service
+            .obterNegociacoesDoPeriodo()
+            .then((negociacoes) => {
+            negociacoes
+                .filter((novaNegociacao) => !this.negociacoes
+                .paraArray()
+                .some((negociacaoExistente) => novaNegociacao.equals(negociacaoExistente)))
+                .forEach((negociacao) => this.negociacoes.adiciona(negociacao));
+            this.mensagem.texto = "Negociações do período importadas	com	sucesso";
+        })
+            .catch((err) => (this.mensagem.texto = err));
     }
 }
 //# sourceMappingURL=NegociacaoController.js.map

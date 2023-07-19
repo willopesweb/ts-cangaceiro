@@ -20,5 +20,8 @@ export default class Negociacao {
     get getValor() {
         return this.valor;
     }
+    equals(negociacao) {
+        return JSON.stringify(this) == JSON.stringify(negociacao);
+    }
 }
 //# sourceMappingURL=Negociacao.js.map

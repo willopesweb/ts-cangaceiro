@@ -25,4 +25,8 @@ export default class Negociacao {
   get getValor(): number {
     return this.valor;
   }
+
+  equals(negociacao: Negociacao) {
+    return JSON.stringify(this) == JSON.stringify(negociacao);
+  }
 }

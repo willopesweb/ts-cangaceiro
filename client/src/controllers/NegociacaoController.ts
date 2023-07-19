@@ -68,20 +68,25 @@ export default class NegociacaoController {
   }
 
   public importarNegociacoes() {
-    this.service.obterNegociacoesDaSemana(
-      (err: string | null, negociacoes: Array<Negociacao> | null) => {
-        if (err) {
-          this.mensagem.texto = err;
-          return;
-        }
+    const negociacoes: Array<Negociacao> = [];
 
-        if (!negociacoes) return;
-
-        negociacoes.forEach((negociacao) =>
-          this.negociacoes.adiciona(negociacao)
-        );
-        this.mensagem.texto = "Negociações	importadas	com	sucesso";
-      }
-    );
+    this.service
+      .obterNegociacoesDoPeriodo()
+      .then((negociacoes: Array<Negociacao>) => {
+        negociacoes
+          .filter(
+            (novaNegociacao) =>
+              !this.negociacoes
+                .paraArray()
+                .some((negociacaoExistente) =>
+                  novaNegociacao.equals(negociacaoExistente)
+                )
+          )
+          .forEach((negociacao: Negociacao) =>
+            this.negociacoes.adiciona(negociacao)
+          );
+        this.mensagem.texto = "Negociações do período importadas	com	sucesso";
+      })
+      .catch((err: string) => (this.mensagem.texto = err));
   }
 }
