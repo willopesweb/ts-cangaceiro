@@ -36,9 +36,9 @@ export default class NegociacaoDao {
 
         if (cursor) {
           const negociacao = new Negociacao(
-            cursor.value._data,
-            cursor.value._quantidade,
-            cursor.value._valor
+            cursor.value.data,
+            cursor.value.quantidade,
+            cursor.value.valor
           );
 
           negociacoes.push(negociacao);

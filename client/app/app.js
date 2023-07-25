@@ -1,4 +1,5 @@
 import NegociacaoController from "./controllers/NegociacaoController.js";
+import { debounce } from "./util/Debounce.js";
 const controller = new NegociacaoController();
 document
     .querySelector(".form")
@@ -6,7 +7,5 @@ document
 document
     .querySelector("#botao-apaga")
     ?.addEventListener("click", controller.apaga.bind(controller));
-document
-    .querySelector("#botao-importa")
-    ?.addEventListener("click", controller.importarNegociacoes.bind(controller));
+document.querySelector("#botao-importa")?.addEventListener("click", debounce(() => controller.importarNegociacoes(), 1000));
 //# sourceMappingURL=app.js.map

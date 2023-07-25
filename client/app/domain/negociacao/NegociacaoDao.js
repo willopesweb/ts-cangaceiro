@@ -29,7 +29,7 @@ export default class NegociacaoDao {
             cursorRequest.onsuccess = (e) => {
                 const cursor = e.target.result;
                 if (cursor) {
-                    const negociacao = new Negociacao(cursor.value._data, cursor.value._quantidade, cursor.value._valor);
+                    const negociacao = new Negociacao(cursor.value.data, cursor.value.quantidade, cursor.value.valor);
                     negociacoes.push(negociacao);
                     cursor.continue();
                 }

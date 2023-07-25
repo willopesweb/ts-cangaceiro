@@ -7,6 +7,7 @@ import MensagemView from "../ui/view/MensagemView.js";
 import Bind from "../util/Bind.js";
 import NegociacaoService from "../domain/negociacao/NegociacaoService.js";
 import getNegociacaoDao from "../util/DaoFactory.js";
+import { getExceptionMessage } from "../util/ApplicationException.js";
 export default class NegociacaoController {
     inputData;
     inputQuantidade;
@@ -25,32 +26,42 @@ export default class NegociacaoController {
         this.service = new NegociacaoService();
         this.init();
     }
-    init() {
-        getNegociacaoDao()
-            .then((dao) => dao.listaTodos())
-            .then((negociacoes) => negociacoes.forEach((negociacao) => this.negociacoes.adiciona(negociacao)))
-            .catch((err) => (this.mensagem.texto = err));
+    async init() {
+        try {
+            const dao = await getNegociacaoDao();
+            const negociacoes = await dao.listaTodos();
+            negociacoes.forEach((negociacao) => this.negociacoes.adiciona(negociacao));
+        }
+        catch (err) {
+            this.mensagem.texto = getExceptionMessage(err);
+        }
     }
-    adiciona(event) {
+    async adiciona(event) {
         event.preventDefault();
-        const negociacao = this.criaNegociacao();
-        getNegociacaoDao()
-            .then((dao) => dao.adiciona(negociacao))
-            .then(() => {
+        try {
+            const negociacao = this.criaNegociacao();
+            const dao = await getNegociacaoDao();
+            if (!(negociacao instanceof Negociacao))
+                return;
+            await dao.adiciona(negociacao);
             this.negociacoes.adiciona(this.criaNegociacao());
             this.mensagem.texto = "Negociação adicionada com sucesso";
             this.limpaFormulario();
-        })
-            .catch((err) => (this.mensagem.texto = err));
+        }
+        catch (err) {
+            this.mensagem.texto = getExceptionMessage(err);
+        }
     }
-    apaga() {
-        getNegociacaoDao()
-            .then((dao) => dao.apagaTodos())
-            .then(() => {
+    async apaga() {
+        try {
+            const dao = await getNegociacaoDao();
+            await dao.apagaTodos();
             this.negociacoes.esvazia();
             this.mensagem.texto = "Negociações	apagadas	com	sucesso";
-        })
-            .catch((err) => (this.mensagem.texto = err));
+        }
+        catch (err) {
+            this.mensagem.texto = getExceptionMessage(err);
+        }
     }
     limpaFormulario() {
         if (!this.inputData || !this.inputQuantidade || !this.inputValor)
@@ -65,19 +76,19 @@ export default class NegociacaoController {
             return null;
         return new Negociacao(DataConverter.paraData(this.inputData.value), parseInt(this.inputQuantidade.value), parseFloat(this.inputValor.value));
     }
-    importarNegociacoes() {
-        const negociacoes = [];
-        this.service
-            .obterNegociacoesDoPeriodo()
-            .then((negociacoes) => {
+    async importarNegociacoes() {
+        try {
+            const negociacoes = await this.service.obterNegociacoesDoPeriodo();
             negociacoes
                 .filter((novaNegociacao) => !this.negociacoes
                 .paraArray()
                 .some((negociacaoExistente) => novaNegociacao.equals(negociacaoExistente)))
                 .forEach((negociacao) => this.negociacoes.adiciona(negociacao));
             this.mensagem.texto = "Negociações do período importadas	com	sucesso";
-        })
-            .catch((err) => (this.mensagem.texto = err));
+        }
+        catch (err) {
+            this.mensagem.texto = getExceptionMessage(err);
+        }
     }
 }
 //# sourceMappingURL=NegociacaoController.js.map
