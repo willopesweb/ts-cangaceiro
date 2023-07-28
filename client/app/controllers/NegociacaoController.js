@@ -1,3 +1,10 @@
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var NegociacaoController_1;
 import Negociacao from "../domain/negociacao/Negociacao.js";
 import Negociacoes from "../domain/negociacao/Negociacoes.js";
 import DataConverter from "../ui/converters/DataConverter.js";
@@ -8,18 +15,20 @@ import Bind from "../util/Bind.js";
 import NegociacaoService from "../domain/negociacao/NegociacaoService.js";
 import getNegociacaoDao from "../util/DaoFactory.js";
 import { getExceptionMessage } from "../util/ApplicationException.js";
-export default class NegociacaoController {
+import { debounce } from "../util/decorators/Debounce.js";
+import { controller } from "../util/decorators/Controller.js";
+let NegociacaoController = NegociacaoController_1 = class NegociacaoController {
     inputData;
     inputQuantidade;
     inputValor;
     negociacoes;
     mensagem;
     service;
-    constructor() {
-        const $ = document.querySelector.bind(document);
-        this.inputData = $("#data");
-        this.inputQuantidade = $("#quantidade");
-        this.inputValor = $("#valor");
+    constructor(...args) {
+        const [inputData, inputQuantidade, inputValor] = args.length === 3 ? args : NegociacaoController_1.getElements();
+        this.inputData = inputData;
+        this.inputQuantidade = inputQuantidade;
+        this.inputValor = inputValor;
         const self = this;
         this.negociacoes = new Bind(new Negociacoes(), new NegociacoesView("#negociacoes"), "adiciona", "esvazia");
         this.mensagem = new Bind(new Mensagem(), new MensagemView("#mensagemView"), "texto");
@@ -36,8 +45,14 @@ export default class NegociacaoController {
             this.mensagem.texto = getExceptionMessage(err);
         }
     }
-    async adiciona(event) {
-        event.preventDefault();
+    static getElements() {
+        const $ = document.querySelector.bind(document);
+        const inputData = $("#data");
+        const inputQuantidade = $("#quantidade");
+        const inputValor = $("#valor");
+        return [inputData, inputQuantidade, inputValor];
+    }
+    async adiciona() {
         try {
             const negociacao = this.criaNegociacao();
             const dao = await getNegociacaoDao();
@@ -90,5 +105,15 @@ export default class NegociacaoController {
             this.mensagem.texto = getExceptionMessage(err);
         }
     }
-}
+};
+__decorate([
+    debounce()
+], NegociacaoController.prototype, "adiciona", null);
+__decorate([
+    debounce(1000)
+], NegociacaoController.prototype, "importarNegociacoes", null);
+NegociacaoController = NegociacaoController_1 = __decorate([
+    controller("#data", "#quantidade", "#valor")
+], NegociacaoController);
+export default NegociacaoController;
 //# sourceMappingURL=NegociacaoController.js.map

@@ -9,7 +9,10 @@ import NegociacaoService from "../domain/negociacao/NegociacaoService.js";
 import getNegociacaoDao from "../util/DaoFactory.js";
 import NegociacaoDao from "../domain/negociacao/NegociacaoDao.js";
 import { getExceptionMessage } from "../util/ApplicationException.js";
+import { debounce } from "../util/decorators/Debounce.js";
+import { controller } from "../util/decorators/Controller.js";
 
+@controller("#data", "#quantidade", "#valor")
 export default class NegociacaoController {
   private inputData: HTMLInputElement | null;
   private inputQuantidade: HTMLInputElement | null;
@@ -18,11 +21,13 @@ export default class NegociacaoController {
   private mensagem: Mensagem;
   private service: NegociacaoService;
 
-  constructor() {
-    const $ = document.querySelector.bind(document);
-    this.inputData = $("#data") as HTMLInputElement;
-    this.inputQuantidade = $("#quantidade") as HTMLInputElement;
-    this.inputValor = $("#valor") as HTMLInputElement;
+  constructor(...args: any[]) {
+    const [inputData, inputQuantidade, inputValor] =
+      args.length === 3 ? args : NegociacaoController.getElements();
+
+    this.inputData = inputData;
+    this.inputQuantidade = inputQuantidade;
+    this.inputValor = inputValor;
     const self = this;
     this.negociacoes = new Bind(
       new Negociacoes(),
@@ -53,8 +58,16 @@ export default class NegociacaoController {
     }
   }
 
-  public async adiciona(event: Event) {
-    event.preventDefault();
+  static getElements(): [HTMLInputElement, HTMLInputElement, HTMLInputElement] {
+    const $ = document.querySelector.bind(document);
+    const inputData = $("#data") as HTMLInputElement;
+    const inputQuantidade = $("#quantidade") as HTMLInputElement;
+    const inputValor = $("#valor") as HTMLInputElement;
+    return [inputData, inputQuantidade, inputValor];
+  }
+
+  @debounce()
+  public async adiciona() {
     try {
       const negociacao = this.criaNegociacao();
       const dao = await getNegociacaoDao();
@@ -96,7 +109,7 @@ export default class NegociacaoController {
       parseFloat(this.inputValor.value)
     );
   }
-
+  @debounce(1000)
   public async importarNegociacoes() {
     try {
       const negociacoes: Array<Negociacao> =
